@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+
+        <style>
+            .container {
+                position: relative;
+                text-align: center;
+                color: white;
+            }
+
+            #warn {
+                position: absolute;
+                bottom: 100px;
+                left: 570px;
+            }
+
+            .button {
+                position: absolute;
+                bottom: 150px;
+                left: 480px;
+            }
+
+            .button button {
+                height: 40px;
+                border-radius: 0.6rem;
+                border: none;
+                background-color: rgb(65, 65, 95);
+                color: white;
+            }
+
+            .button button:hover {
+                background-color: rgb(176, 176, 209);
+            }
+
+            .wind {
+                position: absolute;
+                bottom: 200px;
+                left: 600px;
+            }
+
+            .wind input {
+                border: 0ch;
+                height: 30px;
+                border-radius: 0.6rem;
+            }
+
+            .wind p {
+                font: 700 Verdana black;
+                font-size: 30px;
+                margin-left: 15px;
+                margin-bottom: 8px;
+            }
+
+            h1 {
+                position: absolute;
+                top: 20px;
+                left: 30%;
+                font-size: 100px;
+            }
+
+            img {
+                width: 100vw;
+                height: 100vh;
+            }
+
+            #value {
+                position: absolute;
+                bottom: -100px;
+                left: 50px;
+                font-size: 20px;
+            }
+
+            
+
+        </style>
+
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <div class="conteiner">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4gQRC_h3ql5mxN2qAgbjuK66nXjDv3PwCgg&usqp=CAU" alt="Wind Energy"/>
+        
+            <div>
+                <h1 style="text-align: center;">Wind Power</h1>
+            </div>
+            
+            <div class="button">
+                <button id="one">LR - Predict by Regression</button>
+                <button id="two">NN - Predict by Neural Network</button>
+
+                <p id="value"></p>
+            </div>   
+            <div class="wind">
+                <p>Wind value:</p>
+                
+                <input id="guess" type="number" name="number"/>
+            </div>
+            <p id="warn">Choose a numbe between 1 to 24</p>    
+        </div>
+    </body>
+    <script>
+        function choose(guess) {
+				if(guess === '')
+					return false;
+				let regex = new RegExp(/[^0-9]/, 'g');
+				return (guess.match(regex) === null);
+			}
+			// https://stackoverflow.com/questions/6454198/check-if-a-value-is-within-a-range-of-numbers
+			// Function to check if x between min and max (returns T)
+			function between(x, min, max) {
+				return x >= min && x <= max;
+            }
+            
+        $("#one").click(function(e) {
+            var output = document.getElementById("value").innerHTML = "The predict by Regression is: "
+			e.preventDefault();
+			var guess = document.getElementById("guess").value;
+				if (choose(guess) && between(guess, 1, 24)){
+					$.getJSON("/api/model1/"+encodeURI(guess), function(result) {
+		    			$('#value').val(parseFloat(result.value).toFixed(2)); 
+                        console.log(result) 
+                        return output + result
+					});	
+				} 
+			});
+
+        $("#two").click(function(e) {
+            var output = document.getElementById("value").innerHTML = "The predict by Neural Network is: " 
+            e.preventDefault();
+				var guess = document.getElementById("guess").value; 
+				if (choose(guess) && between(guess, 1, 24)){
+					$.getJSON("/api/model2/"+encodeURI(guess), function(result) {
+                        $('output').val(parseFloat(result.value).toFixed(2));
+                        return output + result 
+                        console.log(result)
+                    });	
+                }
+		});
+        
+    </script>
+</html>
